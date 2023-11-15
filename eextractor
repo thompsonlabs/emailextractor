@@ -33,9 +33,12 @@ function extractEmails(){
     #strip tags and related special characters from page contents
     sPageContents=$(echo "$pageContents" | sed -e 's/<[^>]*>//g')
 
-    #strip white spaces from page contents
-    sPageContentsNoSpace=$(echo $sPageContents | xargs)
+     #remove quotes from page contents
+    sPageContentsNoQuotes=$(echo "$sPageContents" | sed "s/[\"']//g")
 
+    #strip white spaces from page contents
+    sPageContentsNoSpace=$(echo "$sPageContentsNoQuotes" | sed 's/"/\\"/g' | xargs)
+    
     #parse email addresses from page contents
     eAddresses=$(_parseAllEmailAddressesFromCorpus "$sPageContentsNoSpace")
 
