@@ -1,0 +1,99 @@
+#!/bin/bash
+
+#NAME:         EmailExtractor
+#DESCRIPTION:  Provided with a URL this bash utility will retrieve the contents
+#              of the referenced page and seek to extract all email addresses therein.
+#AUTHOR:       Giles Thompson
+#DATE:         15/11/2023   
+
+#LICENSE:      MIT | Copyright 2023 | ThompsonLabs Limited.
+#              Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
+#              and associated documentation files (the “Software”), to deal in the Software without restriction, 
+#              including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+#              and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+#              subject to the following conditions:The above copyright notice and this permission notice shall be 
+#              included in all copies or substantial portions of the Software.
+
+#              THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED 
+#              TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
+#              THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+#              TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  
+
+
+
+
+
+function extractEmails(){
+
+    aPageURL="$1"
+
+    #fetch page contents
+    pageContents=$(_fetchPageContents "$aPageURL")
+
+    #strip tags and related special characters from page contents
+    sPageContents=$(echo "$pageContents" | sed -e 's/<[^>]*>//g')
+
+    #strip white spaces from page contents
+    sPageContentsNoSpace=$(echo $sPageContents | xargs)
+
+    #parse email addresses from page contents
+    eAddresses=$(_parseAllEmailAddressesFromCorpus "$sPageContentsNoSpace")
+
+    #parse domain portion of the URL, will be used for the ouput file name
+    pageDomain=$(_parseDomainNameFromURL "$aPageURL")
+
+    #write the email addresses to file using the specifed URL domain name 
+    #to title the resulting file.
+    _writeToFile "$pageDomain".txt "$eAddresses"
+
+}
+
+
+
+
+
+
+                                      #Helper Functions
+                               
+function _parseAllEmailAddressesFromCorpus(){
+
+    corpus="$1"
+
+    # Email Regex
+    regex="[A-Za-z0-9][A-Za-z0-9._%+-]+@[A-Za-z0-9][A-Za-z0-9.-]+\.[A-Za-z]{2,6}"
+    
+    matches=$(echo "$corpus" | grep -E -o  "$regex")
+
+    echo "$matches"
+
+}
+
+
+function _fetchPageContents(){
+
+   aPageURL="$1"
+
+   pageContents=$(curl "$aPageURL" -L)
+
+   echo "$pageContents"
+
+}
+
+function _writeToFile(){
+
+    fileName="$1"
+    fileContents="$2"
+
+    echo "$fileContents" > "$fileName"
+}
+
+function _parseDomainNameFromURL(){
+    aURL="$1"
+    IFS=/ read -r prot _ domain link <<<"$aURL"
+    echo "$domain"
+}
+
+
+extractEmails ${@}
+
+
