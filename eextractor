@@ -30,19 +30,13 @@ function extractEmails(){
     #fetch page contents
     pageContents=$(_fetchPageContents "$aPageURL")
 
-    #strip tags and related special characters from page contents
-    sPageContents=$(echo "$pageContents" | sed -e 's/<[^>]*>//g')
-
-     #remove quotes from page contents
-    sPageContentsNoQuotes=$(echo "$sPageContents" | sed "s/[\"']//g")
-
-    #strip white spaces from page contents
-    sPageContentsNoSpace=$(echo "$sPageContentsNoQuotes" | sed 's/"/\\"/g' | xargs)
-    
+    #sanitise raw html page contents to simply the subsequent parsing process
+    sPageContents=$(_sanitisePageContents "$pageContents")
+   
     #parse email addresses from page contents
-    eAddresses=$(_parseAllEmailAddressesFromCorpus "$sPageContentsNoSpace")
+    eAddresses=$(_parseAllEmailAddressesFromCorpus "$sPageContents")
 
-    #parse domain portion of the URL, will be used for the ouput file name
+    #parse domain portion of the URL, will be used for the output file name
     pageDomain=$(_parseDomainNameFromURL "$aPageURL")
 
     #write the email addresses to file using the specifed URL domain name 
@@ -57,6 +51,8 @@ function extractEmails(){
 
 
                                       #Helper Functions
+
+
                                
 function _parseAllEmailAddressesFromCorpus(){
 
@@ -81,6 +77,24 @@ function _fetchPageContents(){
    echo "$pageContents"
 
 }
+
+function _sanitisePageContents(){
+
+    pageContents="$1"
+
+     #strip tags and related special characters from page contents
+    sPageContents=$(echo "$pageContents" | sed -e 's/<[^>]*>//g')
+
+     #remove quotes from page contents
+    sPageContentsNoQuotes=$(echo "$sPageContents" | sed "s/[\"']//g")
+
+    #strip white spaces from page contents
+    sPageContentsNoSpace=$(echo "$sPageContentsNoQuotes" | sed 's/"/\\"/g' | xargs)
+
+    echo "$sPageContentsNoSpace"
+}
+
+
 
 function _writeToFile(){
 
