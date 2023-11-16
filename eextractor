@@ -30,7 +30,7 @@ function extractEmails(){
     #fetch page contents
     pageContents=$(_fetchPageContents "$aPageURL")
 
-    #sanitise raw html page contents to simply the subsequent parsing process
+    #sanitise raw html page contents to simplify the subsequent parsing process
     sPageContents=$(_sanitisePageContents "$pageContents")
    
     #parse email addresses from page contents
