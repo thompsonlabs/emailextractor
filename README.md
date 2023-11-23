@@ -6,4 +6,4 @@ Provided with a URL this bash utility will retrieve the contents of the referenc
 
 2.  Run the script by typing `./eextractor [A_WEBSITE_URL]`
 
-3.  On successful run of the utility, a file will be generated titled as follows: __[WEBSITE_DOMAIN].txt__ the contents of which, will be all email addresses successfully extracted from the page at the provided URL. 
+3.  On successful run of the utility, a file will be generated titled as follows: __[WEBSITE_DOMAIN].txt__  and stored to a sub directory titled extracted-emails; the contents of which, will be all email addresses successfully extracted from the page at the provided URL. 

@@ -100,8 +100,11 @@ function _writeToFile(){
 
     fileName="$1"
     fileContents="$2"
+    outputFolderName="extracted-emails"
 
-    echo "$fileContents" > "$fileName"
+    mkdir -p ./$outputFolderName
+
+    echo "$fileContents" > "./$outputFolderName/$fileName"
 }
 
 function _parseDomainNameFromURL(){
